@@ -14,7 +14,7 @@ import {
 
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-
+import { setCookie } from "@/utils/auth";
 export default function Login() {
   const [identifier, setIdentifier] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -45,8 +45,8 @@ export default function Login() {
       console.log("Login successful:", result);
 
 
-      localStorage.setItem("jwt", result.jwt);
-
+      setCookie("jwt", result.jwt, 7);
+      setCookie("user", JSON.stringify(result.user), 7);
       router.push("/"); 
 
     } catch (error) {
