@@ -21,7 +21,7 @@ export default function Sidebar() {
   const [newSessionDescription, setNewSessionDescription] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL||"https://strapi-backend-71a0.onrender.com";
 
   useEffect(() => {
     const fetchSessions = async () => {
@@ -84,7 +84,7 @@ export default function Sidebar() {
       <div className="h-full overflow-y-scroll py-2 pb-20 pt-4 px-4">
         <ul>
           {sessions.map((session) => (
-            <li key={session.documentId} className={`py-4 px-4 mb-4 rounded-lg h-24 w-full ${sessionId === session.documentId ? 'bg-blue-200' : 'bg-gray-200'}`} onClick={() => handleSessionClick(session.documentId)}>
+            <li key={session.documentId} className={`py-4 px-4 mb-4 rounded-2xl shadow-2xl h-24 w-full ${sessionId === session.documentId ? 'bg-blue-200' : 'bg-gray-200'}`} onClick={() => handleSessionClick(session.documentId)}>
               <a className="block">
                 <div className="font-bold text-xl">{session.name}</div>
                 <div className="text-gray-500 text-sm">{session.description}</div>

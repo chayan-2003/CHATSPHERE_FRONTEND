@@ -9,7 +9,7 @@ interface SessionContextProps {
 }
 
 const SessionContext = createContext<SessionContextProps | undefined>(undefined);
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+const apiUrl = process.env.NEXT_PUBLIC_API_URL||"https://strapi-backend-71a0.onrender.com";
 export const SessionProvider = ({ children }: { children: ReactNode }) => {
   const jwt = Cookies.get("jwt") || "";
   console.log("jwt is:", jwt);

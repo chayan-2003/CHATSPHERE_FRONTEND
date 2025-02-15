@@ -21,7 +21,7 @@ function ChatContent() {
 
   return (
     <div className="flex h-screen">
-      <div className={`overflow-y-auto ${sessionId ? 'hidden lg:block' : 'block w-full lg:w-1/4'}`}>
+      <div className={` bg-white overflow-y-auto ${sessionId ? 'hidden lg:block' : 'block w-full lg:w-1/4'}`}>
         <Sidebar />
       </div>
       <div className={`bg-white ${sessionId ? 'w-full lg:w-3/4' : 'hidden lg:block w-full'} relative`}>

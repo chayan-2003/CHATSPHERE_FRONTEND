@@ -23,7 +23,7 @@ export default function Login() {
   const [error, setError] = useState<string>("");
   const router = useRouter();  
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL||"https://strapi-backend-71a0.onrender.com";
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();

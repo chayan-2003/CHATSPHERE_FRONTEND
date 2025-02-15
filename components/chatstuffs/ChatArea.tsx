@@ -1,11 +1,15 @@
 "use client";
-import { useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/middleware/SessionContext";
 
+import { FaSpinner } from 'react-icons/fa';
+
+
+ 
 interface Message {
   id: string;
   Text: string;
@@ -21,16 +25,15 @@ export default function ChatArea() {
   const user = Cookies.get("user") ? JSON.parse(Cookies.get("user")!) : null;
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(true);
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL||"https://strapi-backend-71a0.onrender.com";
 
   useEffect(() => {
     if (!sessionId) return;
 
     const fetchMessages = async () => {
       try {
-        const user = Cookies.get("user");
-        console.log(user);
         const token = Cookies.get("jwt");
         const response = await axios.get(
           `${apiUrl}/api/sessions/${sessionId}?populate[message][populate]=sender&populate[message][sort]=createdAt:asc`,
@@ -38,16 +41,16 @@ export default function ChatArea() {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-        console.log("entire response is:", response);
         setMessages(response.data.data.message || []);
-        console.log(response.data.data.message);
       } catch (error) {
         console.error("Error fetching messages:", error);
+      } finally {
+        setLoading(false);
       }
     };
     socket?.emit("joinRoom", sessionId);
     fetchMessages();
-  }, [sessionId, socket, messages, apiUrl]);
+  }, [sessionId, socket, apiUrl]);
 
   const sendMessage = async () => {
     if (!newMessage.trim() || !sessionId) return;
@@ -89,7 +92,6 @@ export default function ChatArea() {
   useEffect(() => {
     if (socket) {
       socket.on("newMessage", (message: Message) => {
-        console.log("new message received:", message);
         setMessages((prev) => [...prev,
         {
           id: message.id || "",
@@ -110,17 +112,29 @@ export default function ChatArea() {
 
   if (!sessionId) {
     return (
-      <div className="flex items-center justify-center h-full text-gray-500">
+      <div className="flex items-center justify-center h-full text-gray-500  ">
+        <div className="flex flex-col items-center justify-center space-y-4">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSRe-vEclWO4EukVKcYgW8stlX60KUUCkPZCQ&s=10" alt="chat" className="w-20 h-20 " />
         No session selected. Please select a session to start chatting.
+        </div>
       </div>
     );
   }
 
   return (
     <div className="flex flex-col h-full mb-20 ">
-      <div className="flex-1 overflow-y-auto p-4 bg-gray-100">
-        {messages.length === 0 ? (
-          <div className="text-gray-500 text-center">No messages yet.</div>
+      <div className="flex-1 overflow-y-auto p-4 bg-gray-200">
+        {loading ? (
+       
+           <div className="flex justify-center items-center mt-60 ">
+                        <FaSpinner className="animate-spin text-indigo-600 text-2xl" />
+                      </div>
+        
+        ) : messages.length === 0 ? (
+          <div className="text-gray-500 text-center">
+         
+            No messages yet.
+            </div>
         ) : (
           messages.map((message, index) => (
             message ? (
@@ -133,8 +147,8 @@ export default function ChatArea() {
                   )}
 
                   {message.Text && (
-                    <div className={` p-2 rounded-md shadow-md   
-                   ${message.sender?.id === user?.id ? "bg-blue-400" : "bg-green-400"}`}>{message.Text}</div>
+                    <div className={` p-2  shadow-md   
+                   ${message.sender?.id === user?.id ? "bg-blue-400 rounded-2xl text-white shadow-2xl shadow-blue-300 px-3" : "bg-green-400 shadow-2xl shadow-green-400 rounded-2xl px-3 "}`}>{message.Text}</div>
                   )}
                   {message.publishedAt && (
                     <div className="text-xs text-gray-400 

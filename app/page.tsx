@@ -1,30 +1,53 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRightToBracket, faUserPlus, faLock, faComments, faUsers } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export default function Home() {
+  const text = "Experience seamless group communication with our modern chat platform. Connect with teams, friends, and communities in real time with advanced features like typing indicators and online stats.";
+  const [displayedText, setDisplayedText] = useState("");
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      if (currentIndex < text.length) {
+        setDisplayedText(text.substring(0, currentIndex + 1));
+        setCurrentIndex(currentIndex + 1);
+      } else {
+        setTimeout(() => {
+          setDisplayedText("");
+          setCurrentIndex(0);
+        }, 300000000);
+      }
+    }, 10);
+
+    return () => clearTimeout(timer);
+  }, [currentIndex, text]);
+
+  const handleImageClick = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <main className="bg-gray-100 py-10">
-      {/* Container to restrict overall width */}
-      <div className=" px-4 md:mt-24">
+      <div className={`px-4 md:mt-24 ${isModalOpen ? 'blur-sm' : ''}`}>
         <div className="flex flex-col md:flex-row items-center justify-center gap-10 md:gap-20 mt-14">
           {/* Left Section */}
           <div className="flex flex-col items-center md:items-start text-center md:text-left w-full md:w-1/2">
-            <h1 className=" font-serif  text-blue-600 text-4xl sm:text-5xl md:text-6xl">
+            <h1 className="font-serif animate-pulse text-blue-600 text-4xl sm:text-5xl md:text-6xl">
               CHATSPHERE
             </h1>
-            <p className=" font-mono text-lg sm:text-xl mt-6 text-gray-700">
-              Experience seamless group communication with our modern chat platform.
-              Connect with teams, friends, and communities in real time with advanced
-              features like typing indicators and online stats.
-              Experience seamless group communication with our modern chat platform.
-              Connect with teams, friends, and communities in real time with advanced
-              features like typing indicators and online stats.
+            <p className="font-mono text-lg sm:text-xl mt-6 text-gray-700">
+              {displayedText}
             </p>
-            <div className="mt-6 flex  gap-4">
+            <div className="mt-6 flex gap-4">
               <Link href="/register">
                 <Button className="bg-blue-500 flex items-center justify-center gap-2 px-5 py-3 text-white rounded-md hover:bg-blue-700">
                   <FontAwesomeIcon icon={faUserPlus} />
@@ -44,9 +67,10 @@ export default function Home() {
           <div className="w-full md:w-1/3 p-4 flex justify-center">
             <div className="w-full max-w-xs sm:max-w-sm sm:hover:scale-105 transition-transform duration-300 shadow-lg hover:shadow-2xl shadow-blue-400 hover:shadow-blue-600">
               <img
-                src="https://i.postimg.cc/kXH2FdFN/Screenshot-2025-02-15-114112.png"
+                src="https://i.postimg.cc/fRC2jrnD/Screenshot-2025-02-16-022159.png"
                 alt="Screenshot"
-                className="w-full rounded-lg"
+                className="w-full rounded-lg cursor-pointer"
+                onClick={handleImageClick}
               />
             </div>
           </div>
@@ -84,6 +108,24 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {isModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50">
+          <div className="relative">
+            <button
+              className="absolute top-2 right-2 text-white text-2xl"
+              onClick={handleCloseModal}
+            >
+              &times;
+            </button>
+            <img
+              src="https://i.postimg.cc/fRC2jrnD/Screenshot-2025-02-16-022159.png"
+              alt="Screenshot"
+              className="w-full max-w-3xl rounded-lg"
+            />
+          </div>
+        </div>
+      )}
     </main>
   );
 }
