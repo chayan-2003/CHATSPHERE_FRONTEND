@@ -1,5 +1,4 @@
 "use client";
-
 import Link from "next/link";
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";  
@@ -16,8 +15,9 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { setCookie } from "@/utils/auth";
 
-export default function Login() {
-  const [identifier, setIdentifier] = useState<string>("");
+export default function Register() {
+  const [username, setUsername] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
   const router = useRouter();  
@@ -31,31 +31,32 @@ export default function Login() {
     setError(""); 
 
     try {
-      const response = await fetch(`${apiUrl}/api/auth/local`, {
+      const response = await fetch(`${apiUrl}/api/auth/local/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          identifier,
+          username,
+          email,
           password,
         }),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to login");
+        throw new Error("Failed to register");
       }
 
       const result = await response.json();
-      console.log("Login successful:", result);
+      console.log("Registration successful:", result);
 
       setCookie("jwt", result.jwt, 7);
       setCookie("user", JSON.stringify(result.user), 7);
-      router.push("/ChatPage"); 
+      router.push("/login"); 
 
     } catch (error) {
-      console.error("Error during login:", error);
-      setError("Invalid username or password");
+      console.error("Error during registration:", error);
+      setError("Failed to register. Please try again.");
     }
   };
 
@@ -64,21 +65,32 @@ export default function Login() {
       <form onSubmit={handleSubmit}>
         <Card>
           <CardHeader className="space-y-1">
-            <CardTitle className="text-3xl font-bold">Sign In</CardTitle>
+            <CardTitle className="text-3xl font-bold">Sign Up</CardTitle>
             <CardDescription>
-              Enter your details to sign in to your account
+              Enter your details to create a new account
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="identifier">Username or Email</Label>
+              <Label htmlFor="username">Username</Label>
               <Input
-                id="identifier"
-                name="identifier"
+                id="username"
+                name="username"
                 type="text"
-                placeholder="username or email"
-                value={identifier}
-                onChange={(e) => setIdentifier(e.target.value)}
+                placeholder="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="name@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             <div className="space-y-2">
@@ -99,14 +111,14 @@ export default function Login() {
               type="submit"
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             >
-              Sign In
+              Sign Up
             </button>
           </CardFooter>
         </Card>
         <div className="mt-4 text-center text-sm">
-          Don't have an account?
-          <Link className="underline ml-2" href="/register">
-            Sign Up
+          Have an account?
+          <Link className="underline ml-2" href="/login">
+            Sign In
           </Link>
         </div>
       </form>
