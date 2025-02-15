@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";  
+import axios from "axios";
 import {
   CardTitle,
   CardDescription,
@@ -22,31 +23,27 @@ export default function Login() {
   const [error, setError] = useState<string>("");
   const router = useRouter();  
 
-  const apiUrl = process.env.NODE_ENV === 'production'
-    ? process.env.REACT_APP_API_URL_PRODUCTION
-    : process.env.REACT_APP_API_URL_LOCAL;
+  const apiUrl = "https://strapi-backend-71a0.onrender.com";
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     setError(""); 
 
     try {
-      const response = await fetch(`${apiUrl}/api/auth/local`, {
-        method: "POST",
+      const response = await axios.post(`${apiUrl}/api/auth/local`, {
+        identifier,
+        password,
+      }, {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          identifier,
-          password,
-        }),
       });
 
-      if (!response.ok) {
+      if (response.status !== 200) {
         throw new Error("Failed to login");
       }
 
-      const result = await response.json();
+      const result = response.data;
       console.log("Login successful:", result);
 
       setCookie("jwt", result.jwt, 7);

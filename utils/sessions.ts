@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:1337/api";  
+const API_URL = "https://strapi-backend-71a0.onrender.com/api";  
 
 export const fetchSessions = async () => {
     try {
@@ -21,6 +21,7 @@ export const fetchSession = async (id: string) => {
         return null;
     }
 };
+
 export const createSession = async (name: string, description: string, token: string) => {
     try {
         const newSession = {
