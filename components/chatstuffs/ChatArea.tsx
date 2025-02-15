@@ -21,6 +21,10 @@ export default function ChatArea() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState<string>("");
 
+  const apiUrl = process.env.NODE_ENV === 'production'
+    ? process.env.REACT_APP_API_URL_PRODUCTION
+    : process.env.REACT_APP_API_URL_LOCAL;
+
   useEffect(() => {
     if (!sessionId) return;
 
@@ -30,7 +34,7 @@ export default function ChatArea() {
         console.log(user);
         const token = Cookies.get("jwt");
         const response = await axios.get(
-          `http://localhost:1337/api/sessions/${sessionId}?populate[message][populate]=sender&populate[message][sort]=createdAt:asc`,
+          `${apiUrl}/api/sessions/${sessionId}?populate[message][populate]=sender&populate[message][sort]=createdAt:asc`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -44,23 +48,23 @@ export default function ChatArea() {
     };
     socket?.emit("joinRoom", sessionId);
     fetchMessages();
-  }, [sessionId, socket, messages]);
+  }, [sessionId, socket, messages, apiUrl]);
 
   const sendMessage = async () => {
     if (!newMessage.trim() || !sessionId) return;
 
     try {
       const token = Cookies.get("jwt");
-      const sender=Cookies.get("user");
+      const sender = Cookies.get("user");
 
       if (!sender) {
         console.error("Sender is undefined");
         return;
       }
-      socket?.emit("sendMessage", { message: newMessage, sender , sessionId });
+      socket?.emit("sendMessage", { message: newMessage, sender, sessionId });
       const senderObj = JSON.parse(sender);
       const response = await axios.post(
-        `http://localhost:1337/api/messages`,
+        `${apiUrl}/api/messages`,
         {
           data: {
             Text: newMessage,
@@ -69,7 +73,6 @@ export default function ChatArea() {
               username: senderObj.username
             },
             session: sessionId,
-
           },
         },
         {
@@ -83,24 +86,29 @@ export default function ChatArea() {
       console.error("Error sending message:", error);
     }
   };
+
   useEffect(() => {
     if (socket) {
       socket.on("newMessage", (message: Message) => {
         console.log("new message received:", message);
-        setMessages((prev) => [...prev, 
-          {
-            id: message.id||"",
-            Text: message.Text||"",
-            sender: {
-              username: message.sender.username||"",
-              id: message.sender.id||"",
-            },
-            publishedAt: message.publishedAt||""
-          }
+        setMessages((prev) => [...prev,
+        {
+          id: message.id || "",
+          Text: message.Text || "",
+          sender: {
+            username: message.sender.username || "",
+            id: message.sender.id || "",
+          },
+          publishedAt: message.publishedAt || ""
+        }
         ]);
       });
     }
+    return () => {
+      socket?.off("newMessage");
+    }
   }, [socket, sessionId, messages]);
+
   if (!sessionId) {
     return (
       <div className="flex items-center justify-center h-full text-gray-500">
@@ -110,32 +118,36 @@ export default function ChatArea() {
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full mb-20 ">
       <div className="flex-1 overflow-y-auto p-4 bg-gray-100">
         {messages.length === 0 ? (
           <div className="text-gray-500 text-center">No messages yet.</div>
         ) : (
-
-          messages.map((message,index) => (
+          messages.map((message, index) => (
             message ? (
-              <div key={index} className="mb-4">
-                {message.sender ? (
-                  <div className="text-sm text-gray-500">{message.sender.username}</div>
-                ) : (
-                  <div className="text-sm text-gray-500">Unknown User</div>
-                )}
-                {message.Text && (
-                  <div className="bg-white p-2 rounded-lg shadow-md">{message.Text}</div>
-                )}
-                {message.publishedAt && (
-                  <div className="text-xs text-gray-400">{new Date(message.publishedAt).toLocaleString()}</div>
-                )}
+              <div key={index} className={`mb-4 ${message.sender?.id === user?.id ? "flex justify-start " : "flex justify-end "}`}>
+                <div className="flex-col">
+                  {message.sender ? (
+                    <div className="text-sm text-gray-500 mb-1">{message.sender.username}</div>
+                  ) : (
+                    <div className="text-sm text-gray-500 mb-1">Unknown User</div>
+                  )}
+
+                  {message.Text && (
+                    <div className={` p-2 rounded-md shadow-md   
+                   ${message.sender?.id === user?.id ? "bg-blue-400" : "bg-green-400"}`}>{message.Text}</div>
+                  )}
+                  {message.publishedAt && (
+                    <div className="text-xs text-gray-400 
+                  justify-end mt-2">{new Date(message.publishedAt).toLocaleTimeString()}</div>
+                  )}
+                </div>
               </div>
             ) : null
           ))
         )}
       </div>
-      <div className="p-4 bg-white border-t border-gray-200 flex">
+      <div className="p-4  bg-white border-t border-gray-200 flex">
         <Input
           type="text"
           placeholder="Type your message..."
@@ -143,8 +155,9 @@ export default function ChatArea() {
           onChange={(e) => setNewMessage(e.target.value)}
           className="flex-1 mr-2 text-black"
         />
-        <Button onClick={sendMessage} className="bg-blue-400 text-white px-4 py-2 rounded-md hover:bg-blue-700">
-          Send
+        <Button onClick={sendMessage} className=" bg-white
+        hover:bg-blue-200">
+          <img src="https://img.icons8.com/m_rounded/512w/filled-sent.png" alt="send" className="w-6 h-6" />
         </Button>
       </div>
     </div>

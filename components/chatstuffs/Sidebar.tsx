@@ -5,9 +5,8 @@ import Cookies from "js-cookie";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUserGroup, faPlus, faTimes, faBars } from "@fortawesome/free-solid-svg-icons";
+import { faUserGroup, faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { useSession } from "@/middleware/SessionContext";
-import ChatArea from "./chatArea"; // Import ChatArea component
 
 interface UserSession {
   name: ReactNode;
@@ -16,18 +15,21 @@ interface UserSession {
 }
 
 export default function Sidebar() {
-  const { setSessionId, sessionId,socket } = useSession();
+  const { setSessionId, sessionId } = useSession();
   const [sessions, setSessions] = useState<UserSession[]>([]);
   const [newSessionUsername, setNewSessionUsername] = useState<string>("");
   const [newSessionDescription, setNewSessionDescription] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
+
+  const apiUrl = process.env.NODE_ENV === 'production'
+    ? process.env.REACT_APP_API_URL_PRODUCTION
+    : process.env.REACT_APP_API_URL_LOCAL;
 
   useEffect(() => {
     const fetchSessions = async () => {
       try {
         const token = Cookies.get("jwt");
-        const response = await axios.get("http://localhost:1337/api/sessions", {
+        const response = await axios.get(`${apiUrl}/api/sessions`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -40,13 +42,13 @@ export default function Sidebar() {
     };
 
     fetchSessions();
-  }, []);
+  }, [apiUrl]);
 
   const createSession = async () => {
     try {
       const token = Cookies.get("jwt");
       const response = await axios.post(
-        "http://localhost:1337/api/sessions",
+        `${apiUrl}/api/sessions`,
         {
           data: {
             name: newSessionUsername,
@@ -70,42 +72,29 @@ export default function Sidebar() {
 
   const handleSessionClick = (sessionId: string) => {
     setSessionId(sessionId);
-    setIsSidebarOpen(false); 
   };
 
   return (
-    <div className="relative md:flex w-0">
-      <div className="p-4 flex items-center gap-2 md:hidden">
-        <Button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="bg-blue-400 text-white px-2 py-1 rounded-md hover:bg-blue-700">
-          <FontAwesomeIcon icon={faBars} size="lg" />
+    <div>
+      <div className="p-4 flex items-center gap-2">
+        <FontAwesomeIcon icon={faUserGroup} size="lg" />
+        <h2 className="text-2xl font-bold">Sessions</h2>
+        <Button onClick={() => setIsModalOpen(true)} className="ml-auto bg-blue-400 text-white px-2 py-1 rounded-md hover:bg-blue-700">
+          <FontAwesomeIcon icon={faPlus} size="xs" />
         </Button>
       </div>
-      <div className={`fixed inset-0 z-50 transition-transform transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 md:relative md:w-64`}>
-        <div className="w-full h-full text-black bg-white shadow-lg md:shadow-none">
-          <div className="p-4 flex items-center gap-2 shadow-lg">
-            <FontAwesomeIcon icon={faUserGroup} size="lg" />
-            <h2 className="text-2xl font-bold">Sessions</h2>
-            <Button onClick={() => setIsModalOpen(true)} className="ml-auto bg-blue-400 text-white px-2 py-1 rounded-md hover:bg-blue-700">
-              <FontAwesomeIcon icon={faPlus} size="xs" />
-            </Button>
-          
-          </div>
-          <div className="h-full overflow-y-scroll py-2 pb-20 pt-4 px-4">
-            <ul>
-              {sessions.map((session) => (
-              <li key={session.documentId} className={`py-4 px-4 mb-4 rounded-lg h-24 w-full ${sessionId === session.documentId ? 'bg-blue-200' : 'bg-gray-200'}`} onClick={() => handleSessionClick(session.documentId)}>
-                  <a className="block">
-                    <div className="font-bold text-xl">{session.name}</div>
-                    <div className="text-gray-500 text-sm">{session.description}</div>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
+      <div className="h-full overflow-y-scroll py-2 pb-20 pt-4 px-4">
+        <ul>
+          {sessions.map((session) => (
+            <li key={session.documentId} className={`py-4 px-4 mb-4 rounded-lg h-24 w-full ${sessionId === session.documentId ? 'bg-blue-200' : 'bg-gray-200'}`} onClick={() => handleSessionClick(session.documentId)}>
+              <a className="block">
+                <div className="font-bold text-xl">{session.name}</div>
+                <div className="text-gray-500 text-sm">{session.description}</div>
+              </a>
+            </li>
+          ))}
+        </ul>
       </div>
-
-    
 
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">

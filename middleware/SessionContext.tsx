@@ -31,6 +31,7 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
     });
 
     setSocket(newSocket);
+    newSocket.off("disconnect");
 
     
   }, [jwt]);

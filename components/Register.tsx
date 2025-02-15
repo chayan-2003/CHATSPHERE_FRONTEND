@@ -1,11 +1,8 @@
 "use client";
-import Link from "next/link";
-import { useState } from "react";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation"; // Updated import for App Router
 
+import Link from "next/link";
+import { useState, FormEvent } from "react";
+import { useRouter } from "next/navigation";  
 import {
   CardTitle,
   CardDescription,
@@ -17,110 +14,99 @@ import {
 
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { setCookie } from "@/utils/auth";
 
-const schema = z.object({
-  username: z.string().min(1, "Username is required"),
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters long"),
-});
+export default function Login() {
+  const [identifier, setIdentifier] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<string>("");
+  const router = useRouter();  
 
-type FormData = z.infer<typeof schema>;
+  const apiUrl = process.env.NODE_ENV === 'production'
+    ? process.env.REACT_APP_API_URL_PRODUCTION
+    : process.env.REACT_APP_API_URL_LOCAL;
 
-export default function Register() {
-  const router = useRouter();
-  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
-    resolver: zodResolver(schema),
-  });
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault();
+    setError(""); 
 
-  const onSubmit = async (data: FormData) => {
-    const { username, email, password } = data;
     try {
-      const response = await fetch("http://localhost:1337/api/auth/local/register", {
+      const response = await fetch(`${apiUrl}/api/auth/local`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          username,
-          email,
+          identifier,
           password,
         }),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to register");
+        throw new Error("Failed to login");
       }
 
       const result = await response.json();
-      console.log("Registration successful:", result);
-      router.push("/login");
+      console.log("Login successful:", result);
+
+      setCookie("jwt", result.jwt, 7);
+      setCookie("user", JSON.stringify(result.user), 7);
+      router.push("/ChatPage"); 
+
     } catch (error) {
-      console.error("Error during registration:", error);
+      console.error("Error during login:", error);
+      setError("Invalid username or password");
     }
   };
 
   return (
-    <div className="w-full max-w-md mx-auto mt-10">
-      <form onSubmit={handleSubmit(onSubmit)}>
+    <div className="w-full max-w-md">
+      <form onSubmit={handleSubmit}>
         <Card>
           <CardHeader className="space-y-1">
-            <CardTitle className="text-3xl font-bold">Sign Up</CardTitle>
+            <CardTitle className="text-3xl font-bold">Sign In</CardTitle>
             <CardDescription>
-              Enter your details to create a new account
+              Enter your details to sign in to your account
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="identifier">Username or Email</Label>
               <Input
-                id="username"
-                {...register("username")}
+                id="identifier"
+                name="identifier"
                 type="text"
-                placeholder="username"
+                placeholder="username or email"
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
               />
-              {errors.username && (
-                <p className="text-red-500 text-sm">{errors.username.message}</p>
-              )}
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                {...register("email")}
-                type="email"
-                placeholder="name@example.com"
-              />
-              {errors.email && (
-                <p className="text-red-500 text-sm">{errors.email.message}</p>
-              )}
-            </div>
-
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
-                {...register("password")}
+                name="password"
                 type="password"
                 placeholder="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
-              {errors.password && (
-                <p className="text-red-500 text-sm">{errors.password.message}</p>
-              )}
             </div>
+            {error && <p className="text-red-500 text-sm">{error}</p>}
           </CardContent>
           <CardFooter className="flex flex-col">
             <button
               type="submit"
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             >
-              Sign Up
+              Sign In
             </button>
           </CardFooter>
         </Card>
         <div className="mt-4 text-center text-sm">
-          Have an account?
-          <Link className="underline ml-2" href="/login">
-            Sign In
+          Don't have an account?
+          <Link className="underline ml-2" href="/register">
+            Sign Up
           </Link>
         </div>
       </form>

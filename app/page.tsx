@@ -1,65 +1,87 @@
+"use client";
+import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRightToBracket, faUserPlus, faLock, faComments } from "@fortawesome/free-solid-svg-icons";
+import { faRightToBracket, faUserPlus, faLock, faComments, faUsers } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+
 export default function Home() {
   return (
-    <main className="px-8 bg-gray-100">
-      <div className="flex flex-col md:flex-row items-center justify-between">
-        <div className="left portion md:w-1/2 p-4">
-          <div className="text-5xl font-bold text-black">
-            CHAYAN GHOSH
-          </div>
-          <div className="text-5xl font-bold text-blue-400 mt-3">
-            CHATSPHERE
-          </div>
-          <div className="text-xl mt-4 ">
-            Experience seamless group communication with our modern chat platform.
-            Connect with teams, friends, communities in real time and with
-            advanced features like typing indicators and online stats.
-          </div>
-          <div className="mt-6">
-            <div className="flex gap-4">
+    <main className="bg-gray-100 py-10">
+      {/* Container to restrict overall width */}
+      <div className=" px-4 md:mt-24">
+        <div className="flex flex-col md:flex-row items-center justify-center gap-10 md:gap-20 mt-14">
+          {/* Left Section */}
+          <div className="flex flex-col items-center md:items-start text-center md:text-left w-full md:w-1/2">
+            <h1 className=" font-serif  text-blue-600 text-4xl sm:text-5xl md:text-6xl">
+              CHATSPHERE
+            </h1>
+            <p className=" font-mono text-lg sm:text-xl mt-6 text-gray-700">
+              Experience seamless group communication with our modern chat platform.
+              Connect with teams, friends, and communities in real time with advanced
+              features like typing indicators and online stats.
+              Experience seamless group communication with our modern chat platform.
+              Connect with teams, friends, and communities in real time with advanced
+              features like typing indicators and online stats.
+            </p>
+            <div className="mt-6 flex  gap-4">
               <Link href="/register">
-              <Button className="bg-blue-400 flex items-center justify-center gap-2 px-4 py-2 text-white rounded-md hover:bg-blue-700">
-                <FontAwesomeIcon icon={faUserPlus} />
-                Get Started
-              </Button >
+                <Button className="bg-blue-500 flex items-center justify-center gap-2 px-5 py-3 text-white rounded-md hover:bg-blue-700">
+                  <FontAwesomeIcon icon={faUserPlus} />
+                  Get Started
+                </Button>
               </Link>
-              <Link href ="/login">
-              <Button className="bg-white-400 flex items-center justify-center gap-2 px-4 py-2 text-blue-400 rounded-md hover:bg-blue-700">
-                <FontAwesomeIcon icon={faRightToBracket} />
-                Login
-              </Button>
+              <Link href="/login">
+                <Button className="bg-white border border-blue-400 flex items-center justify-center gap-2 px-5 py-3 text-blue-500 rounded-md hover:bg-blue-700 hover:text-white">
+                  <FontAwesomeIcon icon={faRightToBracket} />
+                  Login
+                </Button>
               </Link>
             </div>
           </div>
-        </div>
-        <div className="right portion md:w-1/2 p-4">
-          <div className="w-full">
-            <img
-              src="https://img.freepik.com/premium-vector/chat-app-logo-sms-messenger-label-design-mobile-app-online-conversation-with-texting-message-ui-design-concept-vector-illustration_172533-1513.jpg?w=740"
-              alt="chat app logo"
-              className="object-cover w-full h-auto"
-            />
+
+          {/* Right Section */}
+          <div className="w-full md:w-1/3 p-4 flex justify-center">
+            <div className="w-full max-w-xs sm:max-w-sm sm:hover:scale-105 transition-transform duration-300 shadow-lg hover:shadow-2xl shadow-blue-400 hover:shadow-blue-600">
+              <img
+                src="https://i.postimg.cc/kXH2FdFN/Screenshot-2025-02-15-114112.png"
+                alt="Screenshot"
+                className="w-full rounded-lg"
+              />
+            </div>
           </div>
         </div>
-      </div>
-      <div className="text-4xl text-center mx-auto mt-20">Powerful Features</div>
-      <div className="text-xl text-center mx-auto mb-10  mt-2 text-gray-400">Everything you need for seamless team collaboration</div>
-      <div className=" mb-4 grid grid-cols-1 md:grid-cols-3 gap-12 mb-20">
-        <div className="bg-white shadow-xl  p-6 rounded-lg shadow-md hover:shadow-2xl transform hover:translate-y-1 ">
-        <i className="fa-solid fa-lock fa-sm"></i>
-          <h3 className="text-xl font-bold mb-2">Encrypted Communication</h3>
-          <p className="text-gray-600">Ensure your conversations are secure with end-to-end encryption.</p>
-        </div>
-       < div className="bg-white shadow-xl  p-6 rounded-lg shadow-md hover:shadow-2xl transform hover:translate-y-1 ">
-          <h3 className="text-xl font-bold mb-2">Real-time Communication</h3>
-          <p className="text-gray-600">Experience seamless real-time communication with our advanced chat features.</p>
-        </div>
-        <div className="bg-white shadow-xl  p-6 rounded-lg shadow-md hover:shadow-2xl transform hover:translate-y-1 ">
-          <h3 className="text-xl font-bold mb-2">Join Any Room</h3>
-          <p className="text-gray-600">Join any room and start conversing with your friends and colleagues.</p>
+
+        {/* Features Section */}
+        <div className="flex flex-col items-center text-center mt-36">
+          <h2 className="text-3xl sm:text-4xl font-bold">Powerful Features</h2>
+          <p className="text-lg sm:text-xl text-gray-500 mt-2">
+            Everything you need for seamless team collaboration
+          </p>
+
+          <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-center">
+            <div className="bg-white shadow-xl p-6 rounded-lg hover:shadow-2xl transform sm:hover:translate-y-1">
+              <FontAwesomeIcon icon={faLock} className="text-blue-500 text-3xl mb-3" />
+              <h3 className="text-xl font-bold">Encrypted Communication</h3>
+              <p className="text-gray-600">
+                Ensure your conversations are secure with end-to-end encryption.
+              </p>
+            </div>
+            <div className="bg-white shadow-xl p-6 rounded-lg hover:shadow-2xl transform sm:hover:translate-y-1">
+              <FontAwesomeIcon icon={faComments} className="text-blue-500 text-3xl mb-3" />
+              <h3 className="text-xl font-bold">Real-time Communication</h3>
+              <p className="text-gray-600">
+                Experience seamless real-time communication with our advanced chat features.
+              </p>
+            </div>
+            <div className="bg-white shadow-xl p-6 rounded-lg hover:shadow-2xl transform sm:hover:translate-y-1">
+              <FontAwesomeIcon icon={faUsers} className="text-blue-500 text-3xl mb-3" />
+              <h3 className="text-xl font-bold">Join Any Room</h3>
+              <p className="text-gray-600">
+                Join any room and start conversing with your friends and colleagues.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </main>

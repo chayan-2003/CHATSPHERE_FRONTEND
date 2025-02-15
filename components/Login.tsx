@@ -15,18 +15,23 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { setCookie } from "@/utils/auth";
+
 export default function Login() {
   const [identifier, setIdentifier] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
   const router = useRouter();  
 
+  const apiUrl = process.env.NODE_ENV === 'production'
+    ? process.env.REACT_APP_API_URL_PRODUCTION
+    : process.env.REACT_APP_API_URL_LOCAL;
+
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     setError(""); 
 
     try {
-      const response = await fetch("http://localhost:1337/api/auth/local", {
+      const response = await fetch(`${apiUrl}/api/auth/local`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -44,10 +49,9 @@ export default function Login() {
       const result = await response.json();
       console.log("Login successful:", result);
 
-
       setCookie("jwt", result.jwt, 7);
       setCookie("user", JSON.stringify(result.user), 7);
-      router.push("/"); 
+      router.push("/ChatPage"); 
 
     } catch (error) {
       console.error("Error during login:", error);
