@@ -21,9 +21,7 @@ export default function Sidebar() {
   const [newSessionDescription, setNewSessionDescription] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  const apiUrl = process.env.NODE_ENV === 'production'
-    ? process.env.REACT_APP_API_URL_PRODUCTION
-    : process.env.REACT_APP_API_URL_LOCAL;
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
     const fetchSessions = async () => {

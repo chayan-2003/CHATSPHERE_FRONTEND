@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "https://strapi-backend-71a0.onrender.com/api";  
+const API_URL = process.env.NEXT_PUBLIC_API_URL;  
 
 export const fetchSessions = async () => {
     try {

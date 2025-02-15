@@ -9,7 +9,7 @@ interface SessionContextProps {
 }
 
 const SessionContext = createContext<SessionContextProps | undefined>(undefined);
-
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 export const SessionProvider = ({ children }: { children: ReactNode }) => {
   const jwt = Cookies.get("jwt") || "";
   console.log("jwt is:", jwt);
@@ -17,7 +17,7 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
-    const newSocket = io("http://localhost:1337", {
+    const newSocket = io(apiUrl, {
       transports: ["websocket", "polling"],
       query: {
         token: jwt,
