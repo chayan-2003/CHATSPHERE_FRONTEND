@@ -18,6 +18,7 @@ interface Message {
 
 export default function ChatArea() {
   const { sessionId, socket } = useSession();
+  const user = Cookies.get("user") ? JSON.parse(Cookies.get("user")!) : null;
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState<string>("");
 
