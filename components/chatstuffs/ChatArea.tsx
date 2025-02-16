@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/middleware/SessionContext";
 import { FaSpinner } from 'react-icons/fa';
+import Image from 'next/image';
 
 interface Message {
   id: string;
@@ -57,11 +58,10 @@ export default function ChatArea() {
     fetchMessages();
   }, [apiUrl, sessionId]);
 
-  const sendMessage = (e) => {
+  const sendMessage = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     if (!newMessage.trim() || !sessionId) return;
 
-    const token = Cookies.get("jwt");
     const sender = Cookies.get("user");
 
     if (!sender) {
@@ -70,25 +70,12 @@ export default function ChatArea() {
     }
 
     const senderObj = JSON.parse(sender);
-    const newMsg = {
-      id: Date.now().toString(),
-      Text: newMessage,
-      sender: {
-        id: senderObj.id,
-        username: senderObj.username,
-      },
-      publishedAt: new Date().toISOString(),
-    };
-
- 
     socket?.emit("sendMessage", { recievedText: newMessage, sender: JSON.stringify(senderObj), sessionId });
-
-  
   };
 
   useEffect(() => {
     if (socket) {
-      socket.on("newMessage", (res: any) => {
+      socket.on("newMessage", (res: { id: string; recievedText: string; sender: string; publishedAt: string }) => {
         const parsedSender = JSON.parse(res.sender);
         setMessages((prev) => [
           ...prev,
@@ -113,10 +100,11 @@ export default function ChatArea() {
     return (
       <div className="flex items-center justify-center h-full text-gray-500">
         <div className="flex flex-col items-center justify-center space-y-4">
-          <img
+          <Image
             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSRe-vEclWO4EukVKcYgW8stlX60KUUCkPZCQ&s=10"
             alt="chat"
-            className="w-20 h-20"
+            width={80}
+            height={80}
           />
           No session selected. Please select a session to start chatting.
         </div>
@@ -167,7 +155,7 @@ export default function ChatArea() {
           className="flex-1 mr-2 text-black"
         />
         <Button onClick={sendMessage} className="bg-white hover:bg-blue-200">
-          <img src="https://img.icons8.com/m_rounded/512w/filled-sent.png" alt="send" className="w-6 h-6" />
+          <Image src="https://img.icons8.com/m_rounded/512w/filled-sent.png" alt="send" width={24} height={24} />
         </Button>
       </div>
     </div>
