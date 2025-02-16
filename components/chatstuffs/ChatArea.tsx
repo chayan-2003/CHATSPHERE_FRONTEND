@@ -71,6 +71,7 @@ export default function ChatArea() {
 
     const senderObj = JSON.parse(sender);
     socket?.emit("sendMessage", { recievedText: newMessage, sender: JSON.stringify(senderObj), sessionId });
+    setNewMessage("");
   };
 
   useEffect(() => {
