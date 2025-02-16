@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, ReactNode } from "react";
+import { useEffect, useState} from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { Button } from "@/components/ui/button";
@@ -9,13 +9,13 @@ import { faUserGroup, faPlus, faTimes } from "@fortawesome/free-solid-svg-icons"
 import { useSession } from "@/middleware/SessionContext";
 
 interface UserSession {
-  name: ReactNode;
+  name: string;
   documentId: string;
   description: string;
 }
 
 export default function Sidebar() {
-  const { setSessionId, sessionId } = useSession();
+  const { setSessionId, sessionId,setSessionDetails } = useSession();
   const [sessions, setSessions] = useState<UserSession[]>([]);
   const [newSessionUsername, setNewSessionUsername] = useState<string>("");
   const [newSessionDescription, setNewSessionDescription] = useState<string>("");
@@ -68,26 +68,29 @@ export default function Sidebar() {
     }
   };
 
-  const handleSessionClick = (sessionId: string) => {
-    setSessionId(sessionId);
+  const handleSessionClick = (session: UserSession) => {
+    setSessionId(session.documentId);
+    setSessionDetails({ name: session.name, description: session.description });
+    
   };
 
   return (
     <div>
-      <div className="p-4 flex items-center gap-2">
+      <div className="p-4 flex items-center gap-2 bg-gradient-to-r from-indigo-900 to-blue-500  mt-2 shadow-lg shadow-indigo-300">
         <FontAwesomeIcon icon={faUserGroup} size="lg" />
-        <h2 className="text-2xl font-bold">Sessions</h2>
+        <h2 className="text-2xl font-bold text-white ">Sessions</h2>
         <Button onClick={() => setIsModalOpen(true)} className="ml-auto bg-blue-400 text-white px-2 py-1 rounded-md hover:bg-blue-700">
           <FontAwesomeIcon icon={faPlus} size="xs" />
         </Button>
       </div>
-      <div className="h-full overflow-y-scroll py-2 pb-20 pt-4 px-4">
+      <div className="h-full  py-2 pb-20 pt-4 px-4">
         <ul>
           {sessions.map((session) => (
-            <li key={session.documentId} className={`py-4 px-4 mb-4 rounded-2xl shadow-2xl h-24 w-full ${sessionId === session.documentId ? 'bg-blue-200' : 'bg-gray-200'}`} onClick={() => handleSessionClick(session.documentId)}>
+            <li key={session.documentId} className={`py-4 px-4 mb-4 rounded-md shadow-lg shadow-violet-700 h-24 
+            sm:hover:scale-105 transition duration-300 cursor-pointer  ${sessionId === session.documentId ? 'bg-indigo-700 text-white' : 'bg-blue-200'}`} onClick={() => handleSessionClick(session)}>
               <a className="block">
-                <div className="font-bold text-xl">{session.name}</div>
-                <div className="text-gray-500 text-sm">{session.description}</div>
+                <div className="font-mono font-extrabold text-xl">{session.name}</div>
+                <div className=" text-xs ">{session.description}</div>
               </a>
             </li>
           ))}
@@ -96,7 +99,7 @@ export default function Sidebar() {
 
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md mx-4 md:mx-0 md:w-1/3">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full  mx-4 md:mx-0 ">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold">Create New Session</h2>
               <Button onClick={() => setIsModalOpen(false)} className="bg-transparent text-black">

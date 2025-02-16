@@ -3,9 +3,11 @@ import { createContext, useContext, useState, ReactNode, useEffect } from "react
 import { io, Socket } from "socket.io-client";
 
 interface SessionContextProps {
- sessionId: string | null;
+  sessionId: string | null;
   setSessionId: (id: string) => void;
   socket: Socket | null;
+  sessionDetails: { name: string; description: string } | null;
+  setSessionDetails: (details: { name: string; description: string } | null) => void;
 }
 
 const SessionContext = createContext<SessionContextProps | undefined>(undefined);
@@ -15,7 +17,7 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
   console.log("jwt is:", jwt);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [socket, setSocket] = useState<Socket | null>(null);
-
+  const [sessionDetails, setSessionDetails] = useState<{ name: string; description: string } | null>(null);
   useEffect(() => {
     const newSocket = io(apiUrl, {
       transports: ["websocket", "polling"],
@@ -37,7 +39,7 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
   }, [jwt]);
 
   return (
-    <SessionContext.Provider value={{ sessionId, setSessionId, socket }}>
+    <SessionContext.Provider value={{ sessionId, setSessionId, socket , sessionDetails, setSessionDetails}}>
       {children}
     </SessionContext.Provider>
   );

@@ -21,10 +21,10 @@ function ChatContent() {
 
   return (
     <div className="flex h-screen">
-      <div className={` bg-white overflow-y-auto ${sessionId ? 'hidden lg:block' : 'block w-full lg:w-1/4'}`}>
+      <div className={`  bg-gradient-to-t from-indigo-700 via-cyan-200 to-indigo-200 overflow-y-auto ${sessionId ? 'hidden lg:block' : 'block w-full lg:w-1/4'}`}>
         <Sidebar />
       </div>
-      <div className={`bg-white ${sessionId ? 'w-full lg:w-3/4' : 'hidden lg:block w-full'} relative`}>
+      <div className={` bg-gradient-to-b from-cyan-100 to-indigo-100 ${sessionId ? 'w-full lg:w-3/4' : 'hidden lg:block w-full'} relative`}>
         {sessionId && (
           <button
             onClick={() => setSessionId(null)}
