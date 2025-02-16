@@ -25,14 +25,16 @@ export default function ChatArea() {
   const [loading, setLoading] = useState<boolean>(true);
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://strapi-backend-71a0.onrender.com";
+
   useEffect(() => {
-    if(socket && sessionId){
-      socket.emit("join", sessionId);
+    if (socket && sessionId) {
+      socket.emit("joinRoom", sessionId);
     }
     return () => {
-      socket?.off("join");
+      socket?.off("joinRoom");
     };
   }, [socket, sessionId]);
+
   useEffect(() => {
     if (!sessionId) return;
 
@@ -53,72 +55,50 @@ export default function ChatArea() {
       }
     };
     fetchMessages();
-  }, [apiUrl, sessionId,messages]);
- 
+  }, [apiUrl, sessionId]);
 
-  const sendMessage = async () => {
+  const sendMessage = (e) => {
+    e.preventDefault();
     if (!newMessage.trim() || !sessionId) return;
 
-    try {
-      const token = Cookies.get("jwt");
-      const sender = Cookies.get("user");
+    const token = Cookies.get("jwt");
+    const sender = Cookies.get("user");
 
-      if (!sender) {
-        console.error("Sender is undefined");
-        return;
-      }
-
-      const senderObj = JSON.parse(sender);
-      const newMsg = {
-        id: Date.now().toString(),
-        Text: newMessage,
-        sender: {
-          id: senderObj.id,
-          username: senderObj.username,
-        },
-        publishedAt: new Date().toISOString(),
-      };
-
-  
-      setMessages((prev) => [...prev, newMsg]);
-      setNewMessage("");
-
-      socket?.emit("sendMessage", { message: newMessage, sender, sessionId });
-
-      await axios.post(
-        `${apiUrl}/api/messages`,
-        {
-          data: {
-            Text: newMessage,
-            sender: {
-              id: senderObj.id,
-              username: senderObj.username,
-            },
-            session: sessionId,
-          },
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-    } catch (error) {
-      console.error("Error sending message:", error);
+    if (!sender) {
+      console.error("Sender is undefined");
+      return;
     }
+
+    const senderObj = JSON.parse(sender);
+    const newMsg = {
+      id: Date.now().toString(),
+      Text: newMessage,
+      sender: {
+        id: senderObj.id,
+        username: senderObj.username,
+      },
+      publishedAt: new Date().toISOString(),
+    };
+
+
+    socket?.emit("sendMessage", { recievedText: newMessage, sender: JSON.stringify(senderObj), sessionId });
+    setNewMessage("");
   };
 
   useEffect(() => {
     if (socket) {
-      socket.on("newMessage", (message: Message) => {
+      socket.on("newMessage", (res: any) => {
+        const parsedSender = JSON.parse(res.sender);
         setMessages((prev) => [
           ...prev,
           {
-            id: message.id || "",
-            Text: message.Text || "",
+            id: res.id || "",
+            Text: res.recievedText || "",
             sender: {
-              username: message.sender.username || "",
-              id: message.sender.id || "",
+              username: parsedSender.username || null,
+              id: parsedSender.id || null,
             },
-            publishedAt: message.publishedAt || "",
+            publishedAt: res.publishedAt || new Date().toISOString(),
           },
         ]);
       });
