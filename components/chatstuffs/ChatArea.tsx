@@ -80,8 +80,11 @@ export default function ChatArea() {
       publishedAt: new Date().toISOString(),
     };
 
-
+    // Emit the message to the server
     socket?.emit("sendMessage", { recievedText: newMessage, sender: JSON.stringify(senderObj), sessionId });
+
+    // Update the state immediately
+    setMessages((prev) => [...prev, newMsg]);
     setNewMessage("");
   };
 
