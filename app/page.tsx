@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRightToBracket, faUserPlus, faLock, faComments, faUsers } from "@fortawesome/free-solid-svg-icons";
+import { faRightToBracket, faUserPlus, faLock, faComments } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
