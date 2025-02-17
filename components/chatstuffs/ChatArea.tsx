@@ -148,7 +148,7 @@ export default function ChatArea() {
 
   return (
     <div className="flex flex-col h-full mb-20  ">
-      <div className=" mt-2 p-2  bg-gradient-to-l from-blue-300 via-blue-500 to-indigo-600 text-white flex items-center justify-between  shadow-lg shadow-blue-900 ">
+      <div className=" mt-2 p-2  bg-gradient-to-l from-blue-300 via-blue-500 to-indigo-600 text-white flex items-center justify-between  shadow-lg shadow-blue-900  mr-2">
       < div className="ml-10  py-2 flex   items-center justify-center text-white font-bold font-mono text-xl">
       {sessionDetails?.name} 
       </div>
