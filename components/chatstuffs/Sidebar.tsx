@@ -87,7 +87,7 @@ export default function Sidebar() {
         <ul>
           {sessions.map((session) => (
             <li key={session.documentId} className={`py-4 px-4 mb-4 rounded-md shadow-lg shadow-violet-700 h-24 
-            sm:hover:scale-105 transition duration-300 cursor-pointer  ${sessionId === session.documentId ? 'bg-indigo-700 text-white' : 'bg-blue-200'}`} onClick={() => handleSessionClick(session)}>
+            sm:hover:scale-105 transition duration-300 cursor-pointer hover:bg-indigo-700   ${sessionId === session.documentId ? 'bg-indigo-700 text-white' : 'bg-blue-200'}`} onClick={() => handleSessionClick(session)}>
               <a className="block">
                 <div className="font-mono font-extrabold text-xl">{session.name}</div>
                 <div className=" text-xs ">{session.description}</div>
