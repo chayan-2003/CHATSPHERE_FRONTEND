@@ -98,8 +98,8 @@ export default function Sidebar() {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-full  mx-4 md:mx-0 ">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 ">
+          <div className="bg-white p-6 rounded-lg shadow-lg  mx-4 md:mx-0 ">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold">Create New Session</h2>
               <Button onClick={() => setIsModalOpen(false)} className="bg-transparent text-black">
