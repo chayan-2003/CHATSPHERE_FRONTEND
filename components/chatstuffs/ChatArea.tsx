@@ -58,7 +58,7 @@ export default function ChatArea() {
     fetchMessages();
   }, [apiUrl, sessionId]);
 
-  const sendMessage = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const sendMessage = (e:React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLInputElement>) => {
     e.preventDefault();
     if (!newMessage.trim() || !sessionId) return;
 
@@ -72,8 +72,30 @@ export default function ChatArea() {
     const senderObj = JSON.parse(sender);
     socket?.emit("sendMessage", { recievedText: newMessage, sender: JSON.stringify(senderObj), sessionId });
     setNewMessage("");
+    try
+    {
+      axios.post(`${apiUrl}/api/messages`, {
+        data: {
+          Text: newMessage,
+          sender: senderObj.id,
+          session: sessionId,
+        },
+      }, {
+        headers: {
+          Authorization: `Bearer ${Cookies.get("jwt")}`,
+        },
+      });
+    }
+    catch(e)
+    {
+      console.error("Error sending message:", e);
+    }
   };
-
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      sendMessage(e);
+    }
+  }
   useEffect(() => {
     if (socket) {
       socket.on("newMessage", (res: { id: string; recievedText: string; sender: string; publishedAt: string }) => {
@@ -112,6 +134,8 @@ export default function ChatArea() {
       </div>
     );
   }
+
+
 
   return (
     <div className="flex flex-col h-full mb-20 bg-cyan-100 ">
@@ -160,6 +184,7 @@ export default function ChatArea() {
           placeholder="Type your message..."
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
+          onKeyDown={handleKeyPress}
           className="flex-1 mr-2 text-black border-cyan-100 bg-blue-100"
         />
         <Button onClick={sendMessage} className="bg-white hover:bg-blue-200">
