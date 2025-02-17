@@ -165,7 +165,7 @@ export default function ChatArea() {
          
           messages.map((message, index) => (
             message ? (
-              <div key={index} className={`mb-4 ${message.sender?.id === user?.id ? "flex justify-start " : "flex justify-end "}`}>
+              <div key={index} className={`mb-4 ${message.sender?.id === user?.id ? "flex justify-end " : "flex justify-start "}`}>
                 <div className="flex-col">
                   {message.sender ? (
                     <div className="text-sm text-black font mb-1">{message.sender.username}</div>
