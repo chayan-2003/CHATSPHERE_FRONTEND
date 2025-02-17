@@ -76,7 +76,7 @@ export default function Sidebar() {
 
   return (
     <div>
-      <div className="p-4 flex items-center gap-2 bg-gradient-to-r from-indigo-900 to-blue-500  mt-2 shadow-lg shadow-indigo-300">
+         <div className=" mt-2 p-2  bg-gradient-to-l from-indigo-400 via-indigo-500 to-indigo-600 text-white flex items-center justify-between   rounded-lg shadow-lg shadow-blue-900 flex gap-2 mx-2 ">
         <FontAwesomeIcon icon={faUserGroup} size="lg" />
         <h2 className="text-2xl font-bold text-white ">Sessions</h2>
         <Button onClick={() => setIsModalOpen(true)} className="ml-auto bg-blue-400 text-white px-2 py-1 rounded-md hover:bg-blue-700">
