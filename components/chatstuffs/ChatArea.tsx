@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState,useRef } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { Input } from "@/components/ui/input";
@@ -24,6 +24,15 @@ export default function ChatArea() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://strapi-backend-71a0.onrender.com";
 
@@ -172,11 +181,12 @@ export default function ChatArea() {
                     <div className="text-xs text-black 
                   justify-end mt-2">{new Date(message.publishedAt).toLocaleTimeString()}</div>
                   )}
-                </div>
+                </div >
               </div>
             ) : null
           ))
         )}
+        <div ref={messagesEndRef} />
       </div>
       <div className="p-4 bg-indigo-200  text-white flex">
         <Input
